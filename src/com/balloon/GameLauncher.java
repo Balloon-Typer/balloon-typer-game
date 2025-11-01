@@ -1,4 +1,6 @@
-package com.balloon.ui; // ScreenRouter와 같은 패키지여야 import 없이 사용 가능
+package com.balloon; // ScreenRouter와 같은 패키지여야 import 없이 사용 가능
+
+import com.balloon.core.ScreenRouter;
 
 import javax.swing.*; // SwingUtilities, JFrame, WindowConstants 등 사용
 

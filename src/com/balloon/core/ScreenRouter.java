@@ -1,4 +1,4 @@
-package com.balloon.ui; // 이 파일이 com.balloon.ui 패키지(폴더) 안에 있다는 선언
+package com.balloon.core; // 이 파일이 com.balloon.ui 패키지(폴더) 안에 있다는 선언
 
 import javax.swing.*;  // Swing 컴포넌트(JPanel, JLabel, InputMap 등) 사용
 import java.awt.*;     // AWT의 레이아웃/색상 클래스(CardLayout, Color, GridBagLayout 등) 사용
