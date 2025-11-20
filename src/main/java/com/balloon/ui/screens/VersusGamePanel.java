@@ -1512,54 +1512,80 @@ public class VersusGamePanel extends JPanel implements Showable {
         t.start();
     }
 
-    // 반쪽만 그리는 오버레이
+    // 반쪽만 그리는 오버레이 (반투명 + "블라인드!" 여러 개)
     private void drawBlindHalf(Graphics2D g2, int x, int y, int width, int height) {
         Composite oldComp = g2.getComposite();
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        Font oldFont = g2.getFont();
 
-        g2.setColor(new Color(0, 0, 0)); // 완전 검정
+        // 1) 반투명 검정 배경
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
+        g2.setColor(new Color(0, 0, 0, 220));   // 살짝 비치는 검정
         g2.fillRect(x, y, width, height);
-
         g2.setComposite(oldComp);
 
-        // 중앙 텍스트
-        String text = "블라인드!";
-        Font oldFont = g2.getFont();
-        Font f = NAME_FONT.deriveFont(NAME_FONT.getSize2D() + 6.0f);
+        // 2) "블라인드!" 텍스트 여러 개 뿌리기
+        String text = "BLIND!";
+        Font f = NAME_FONT.deriveFont(NAME_FONT.getSize2D() + 20.0f);
         g2.setFont(f);
         FontMetrics fm = g2.getFontMetrics();
-
         int textW = fm.stringWidth(text);
-        int tx = x + (width - textW) / 2;
-        int ty = y + height / 2;
+        int textH = fm.getAscent();
 
-        g2.setColor(new Color(255, 160, 160));
-        g2.drawString(text, tx, ty);
+        // 몇 칸으로 나눠서 그리기 (cols x rows 그리드)
+        int cols = 3;
+        int rows = 6;
+        int cellW = width / cols;
+        int cellH = height / rows;
+
+        Random r = this.rnd; // 이미 있는 rnd 재사용
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                int cellCenterX = x + col * cellW + cellW / 2;
+                int cellCenterY = y + row * cellH + cellH / 2;
+
+                // 각 칸마다 살짝 랜덤 오프셋 주기 (덜 규칙적으로 보이게)
+                int jitterX = r.nextInt(11) - 5;  // -5 ~ +5
+                int jitterY = r.nextInt(11) - 5;
+
+                int tx = cellCenterX - textW / 2 + jitterX;
+                int ty = cellCenterY + textH / 2 + jitterY;
+
+                // 약간 다른 알파로 방해 느낌
+                g2.setColor(new Color(255, 200, 200, 200));
+                g2.drawString(text, tx, ty);
+            }
+        }
 
         g2.setFont(oldFont);
     }
 
-    // P1 / P2 반쪽만 가리는 블라인드 오버레이
+    // BLIND 반쪽 오버레이 호출(P1/P2)
     private void drawBlindOverlay(Graphics2D g2, int w, int h) {
+
         long now = System.currentTimeMillis();
         int half = w / 2;
 
+        // 왼쪽(P1)
         if (blindP1) {
-            if (now > blindEndP1) {
+            if (now >= blindEndP1) {
                 blindP1 = false;
             } else {
                 drawBlindHalf(g2, 0, 0, half, h);
             }
         }
 
+        // 오른쪽(P2)
         if (blindP2) {
-            if (now > blindEndP2) {
+            if (now >= blindEndP2) {
                 blindP2 = false;
             } else {
                 drawBlindHalf(g2, half, 0, half, h);
             }
         }
     }
+
+
 
     // ================= RESULT =================
 
